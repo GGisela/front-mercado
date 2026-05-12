@@ -1,11 +1,22 @@
-import axios from 'axios';
+//  asegúrate de importar getClientes
+import { getProductos, crearVenta, getClientes } from './api';
 
-const api = axios.create({
-  baseURL: 'http://localhost:8080/api', 
-});
+// ... dentro de cargarDatos:
+const cargarDatos = async () => {
+  try {
+    const resProd = await getProductos();
+    setProductos(resProd.data);
 
-// Asegúrate de que tenga la palabra "export" antes de "const"
-export const getProductos = () => api.get('/productos');
+    // USAMOS LA FUNCIÓN DEL API.JS
+    const resClientes = await getClientes(); 
+    console.log("Clientes cargados:", resClientes.data);
+    setClientes(resClientes.data);
 
-// Esta es la función que te está reclamando el error:
-export const crearVenta = (venta) => api.post('/ventas', venta);
+    if (resClientes.data.length > 0) {
+       // Verifica si en tu Java es id_cliente o idCliente
+       setClienteActivo(resClientes.data[0].id_cliente || resClientes.data[0].idCliente);
+    }
+  } catch (err) {
+    console.error("Error en la carga:", err);
+  }
+};
